@@ -57,7 +57,7 @@ export default function CustomizationPanel({
 
   const colorOptions = [
     '#8B4513', '#D2B48C', '#F5DEB3', '#FFE4C4', '#FFDBAC', 
-    '#F4A460', '#CD853F', '#A0522D', '#8B4513', '#654321'
+    '#F4A460', '#CD853F', '#A0522D', '#DEB887', '#654321'
   ];
 
   const hairColors = [
