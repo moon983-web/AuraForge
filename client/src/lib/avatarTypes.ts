@@ -6,13 +6,15 @@ export type PersonalityTrait =
 export interface AvatarAppearance {
   gender: 'male' | 'female' | 'other';
   bodyType: 'slim' | 'athletic' | 'curvy';
+  height?: number; // 0.7-1.3 scale multiplier (defaults to 1.0 for legacy avatars)
+  muscleDefinition?: number; // 0-100 (defaults to 0 for legacy avatars)
   skinTone: string; // Hex color
   hairColor: string; // Hex color
   eyeColor: string; // Hex color
   clothing: {
     color: string; // Hex color for top
     bottomColor?: string; // Hex color for bottom
-    style: 'casual' | 'formal' | 'fantasy' | 'futuristic';
+    style?: 'casual' | 'formal' | 'fantasy' | 'futuristic' | 'sporty'; // defaults to 'casual' for legacy avatars
   };
 }
 

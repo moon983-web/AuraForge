@@ -27,10 +27,13 @@ const resources = {
         name: "Name",
         gender: "Gender",
         bodyType: "Body Type",
+        height: "Height",
+        muscleDefinition: "Muscle Definition",
         skinTone: "Skin Tone",
         hairColor: "Hair Color",
         eyeColor: "Eye Color",
         clothing: "Clothing",
+        clothingStyle: "Style",
         topColor: "Top Color",
         bottomColor: "Bottom Color",
         trait1: "Primary Trait",
@@ -39,8 +42,15 @@ const resources = {
         voiceType: "Voice Type",
         voicePitch: "Pitch",
         voiceSpeed: "Speed",
+        voiceEnabled: "Enable Text-to-Speech",
+        voiceNotSupported: "Speech not supported in this browser",
+        testVoice: "Test Voice",
+        playTestVoice: "Play Test Voice",
+        voiceTestText: "Hello, my name is {{name}}. Nice to meet you!",
         savedAvatars: "Saved Avatars",
-        noSaved: "No saved avatars yet"
+        noSaved: "No saved avatars yet",
+        exportAll: "Export All",
+        importFile: "Import File"
       },
 
       // Gender
@@ -55,6 +65,15 @@ const resources = {
         slim: "Slim",
         athletic: "Athletic",
         curvy: "Curvy"
+      },
+
+      // Clothing Styles
+      clothingStyle: {
+        casual: "Casual",
+        formal: "Formal",
+        fantasy: "Fantasy",
+        futuristic: "Futuristic",
+        sporty: "Sporty"
       },
 
       // Personality Traits
@@ -138,10 +157,13 @@ const resources = {
         name: "Name",
         gender: "Geschlecht",
         bodyType: "Körpertyp",
+        height: "Größe",
+        muscleDefinition: "Muskeldefinition",
         skinTone: "Hautton",
         hairColor: "Haarfarbe",
         eyeColor: "Augenfarbe",
         clothing: "Kleidung",
+        clothingStyle: "Stil",
         topColor: "Oberteil-Farbe",
         bottomColor: "Unterteil-Farbe",
         trait1: "Haupteigenschaft",
@@ -150,8 +172,15 @@ const resources = {
         voiceType: "Stimmtyp",
         voicePitch: "Tonhöhe",
         voiceSpeed: "Geschwindigkeit",
+        voiceEnabled: "Text-zu-Sprache aktivieren",
+        voiceNotSupported: "Sprache wird in diesem Browser nicht unterstützt",
+        testVoice: "Stimme testen",
+        playTestVoice: "Teststimme abspielen",
+        voiceTestText: "Hallo, mein Name ist {{name}}. Schön dich kennenzulernen!",
         savedAvatars: "Gespeicherte Avatare",
-        noSaved: "Noch keine Avatare gespeichert"
+        noSaved: "Noch keine Avatare gespeichert",
+        exportAll: "Alle exportieren",
+        importFile: "Datei importieren"
       },
 
       // Gender
@@ -166,6 +195,15 @@ const resources = {
         slim: "Schlank",
         athletic: "Athletisch",
         curvy: "Kurvig"
+      },
+
+      // Clothing Styles
+      clothingStyle: {
+        casual: "Lässig",
+        formal: "Formell",
+        fantasy: "Fantasie",
+        futuristic: "Futuristisch",
+        sporty: "Sportlich"
       },
 
       // Personality Traits

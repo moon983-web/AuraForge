@@ -9,8 +9,11 @@ import { Slider } from "./ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
-import { Save, Download, Trash2 } from "lucide-react";
+import { Switch } from "./ui/switch";
+import { Save, Download, Trash2, Volume2, Upload, FileDown } from "lucide-react";
 import { Avatar, AvatarAppearance, PersonalityTrait } from "../lib/avatarTypes";
+import { useSpeech } from "../hooks/useSpeech";
+import { useAvatarStorage } from "../hooks/useAvatarStorage";
 
 interface CustomizationPanelProps {
   avatar: Avatar | null;
@@ -27,6 +30,8 @@ export default function CustomizationPanel({
 }: CustomizationPanelProps) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("appearance");
+  const { speak, isSupported: speechSupported } = useSpeech(avatar?.voice || { type: 'neutral', pitch: 1, speed: 1, enabled: true });
+  const { exportAvatars, importAvatars } = useAvatarStorage();
 
   if (!avatar) {
     return (
@@ -137,6 +142,33 @@ export default function CustomizationPanel({
                 </Select>
               </div>
 
+              {/* Height */}
+              <div className="space-y-2">
+                <Label>{t('customization.height', 'Height')} ({(avatar.appearance.height || 1.0).toFixed(2)}x)</Label>
+                <Slider
+                  value={[avatar.appearance.height || 1.0]}
+                  onValueChange={([value]) => updateAppearance({ height: value })}
+                  min={0.7}
+                  max={1.3}
+                  step={0.05}
+                  className="w-full"
+                />
+              </div>
+
+              {/* Muscle Definition */}
+              <div className="space-y-2">
+                <Label>{t('customization.muscleDefinition', 'Muscle Definition')} ({avatar.appearance.muscleDefinition || 0}%)</Label>
+                <Slider
+                  value={[avatar.appearance.muscleDefinition || 0]}
+                  onValueChange={([value]) => updateAppearance({ muscleDefinition: value })}
+                  max={100}
+                  step={5}
+                  className="w-full"
+                />
+              </div>
+
+              <Separator />
+
               {/* Skin Tone */}
               <div className="space-y-2">
                 <Label>{t('customization.skinTone', 'Skin Tone')}</Label>
@@ -193,6 +225,27 @@ export default function CustomizationPanel({
               <div className="space-y-4">
                 <h4 className="font-medium text-bright-blue">{t('customization.clothing', 'Clothing')}</h4>
                 
+                <div className="space-y-2">
+                  <Label>{t('customization.clothingStyle', 'Style')}</Label>
+                  <Select 
+                    value={avatar.appearance.clothing.style || 'casual'} 
+                    onValueChange={(value: 'casual' | 'formal' | 'fantasy' | 'futuristic' | 'sporty') => updateAppearance({
+                      clothing: { ...avatar.appearance.clothing, style: value }
+                    })}
+                  >
+                    <SelectTrigger className="bg-black/40 border-dark-brown">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="casual">{t('clothingStyle.casual', 'Casual')}</SelectItem>
+                      <SelectItem value="formal">{t('clothingStyle.formal', 'Formal')}</SelectItem>
+                      <SelectItem value="fantasy">{t('clothingStyle.fantasy', 'Fantasy')}</SelectItem>
+                      <SelectItem value="futuristic">{t('clothingStyle.futuristic', 'Futuristic')}</SelectItem>
+                      <SelectItem value="sporty">{t('clothingStyle.sporty', 'Sporty')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="space-y-2">
                   <Label>{t('customization.topColor', 'Top Color')}</Label>
                   <div className="grid grid-cols-5 gap-2">
@@ -292,6 +345,25 @@ export default function CustomizationPanel({
 
             <TabsContent value="voice" className="space-y-4 mt-0">
               <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>{t('customization.voiceEnabled', 'Enable Text-to-Speech')}</Label>
+                  <Switch
+                    checked={avatar.voice.enabled}
+                    onCheckedChange={(checked) => updateAvatar({
+                      voice: { ...avatar.voice, enabled: checked }
+                    })}
+                  />
+                </div>
+                {!speechSupported && (
+                  <p className="text-xs opacity-60 text-yellow-500">
+                    {t('customization.voiceNotSupported', 'Speech not supported in this browser')}
+                  </p>
+                )}
+              </div>
+
+              <Separator />
+
+              <div className="space-y-2">
                 <Label>{t('customization.voiceType', 'Voice Type')}</Label>
                 <Select 
                   value={avatar.voice.type} 
@@ -337,6 +409,21 @@ export default function CustomizationPanel({
                   className="w-full"
                 />
               </div>
+
+              <Separator />
+
+              <div className="space-y-2">
+                <Label>{t('customization.testVoice', 'Test Voice')}</Label>
+                <Button
+                  onClick={() => speak(t('customization.voiceTestText', `Hello, my name is ${avatar.name}. Nice to meet you!`))}
+                  disabled={!avatar.voice.enabled || !speechSupported}
+                  className="w-full bg-bright-blue text-black hover:bg-bright-blue/90"
+                  size="sm"
+                >
+                  <Volume2 className="w-4 h-4 mr-2" />
+                  {t('customization.playTestVoice', 'Play Test Voice')}
+                </Button>
+              </div>
             </TabsContent>
 
             <TabsContent value="saved" className="space-y-4 mt-0">
@@ -345,6 +432,47 @@ export default function CustomizationPanel({
                   <Label>{t('customization.savedAvatars', 'Saved Avatars')}</Label>
                   <span className="text-xs opacity-60">{savedAvatars.length}</span>
                 </div>
+
+                {/* Export/Import Buttons */}
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={exportAvatars}
+                    disabled={savedAvatars.length === 0}
+                    variant="outline"
+                    size="sm"
+                    className="bg-dark-brown border-dark-brown hover:bg-dark-brown/80"
+                  >
+                    <FileDown className="w-3 h-3 mr-2" />
+                    {t('customization.exportAll', 'Export All')}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = '.json';
+                      input.onchange = async (e) => {
+                        const file = (e.target as HTMLInputElement).files?.[0];
+                        if (file) {
+                          const success = await importAvatars(file);
+                          if (success) {
+                            // Force refresh by setting active tab
+                            setActiveTab('appearance');
+                            setTimeout(() => setActiveTab('saved'), 50);
+                          }
+                        }
+                      };
+                      input.click();
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="bg-dark-brown border-dark-brown hover:bg-dark-brown/80"
+                  >
+                    <Upload className="w-3 h-3 mr-2" />
+                    {t('customization.importFile', 'Import File')}
+                  </Button>
+                </div>
+
+                <Separator />
                 
                 {savedAvatars.length === 0 ? (
                   <div className="text-center py-8 text-sm opacity-60">

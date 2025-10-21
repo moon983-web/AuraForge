@@ -44,13 +44,15 @@ export function generateRandomAvatar(): Avatar {
     appearance: {
       gender,
       bodyType: getRandomElement(['slim', 'athletic', 'curvy']),
+      height: Math.round((Math.random() * 0.6 + 0.7) * 100) / 100, // 0.7-1.3
+      muscleDefinition: Math.floor(Math.random() * 101), // 0-100
       skinTone: getRandomElement(SKIN_TONES),
       hairColor: getRandomElement(HAIR_COLORS),
       eyeColor: getRandomElement(EYE_COLORS),
       clothing: {
         color: getRandomElement(CLOTHING_COLORS),
         bottomColor: getRandomElement(CLOTHING_COLORS),
-        style: 'casual'
+        style: getRandomElement(['casual', 'formal', 'fantasy', 'futuristic', 'sporty'] as const)
       }
     },
     personality: {

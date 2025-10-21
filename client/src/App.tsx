@@ -25,6 +25,7 @@ const controls = [
 function App() {
   const [currentAvatar, setCurrentAvatar] = useState<Avatar | null>(null);
   const [activeTab, setActiveTab] = useState<'create' | 'chat'>('create');
+  const [isTalking, setIsTalking] = useState(false);
   const { saveAvatar, loadAvatar, getSavedAvatars } = useAvatarStorage();
 
   const handleAvatarChange = (avatar: Avatar) => {
@@ -105,7 +106,7 @@ function App() {
                 <pointLight position={[-5, 3, 2]} intensity={0.3} color="#4FC3F7" />
 
                 <Suspense fallback={null}>
-                  <AvatarViewer avatar={currentAvatar} />
+                  <AvatarViewer avatar={currentAvatar} isTalking={isTalking} />
                 </Suspense>
               </Canvas>
             </KeyboardControls>
@@ -134,7 +135,10 @@ function App() {
             )}
             
             {activeTab === 'chat' && currentAvatar && (
-              <ConversationInterface avatar={currentAvatar} />
+              <ConversationInterface 
+                avatar={currentAvatar} 
+                onTalkingChange={setIsTalking}
+              />
             )}
           </div>
         </main>

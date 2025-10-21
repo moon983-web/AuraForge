@@ -7,7 +7,25 @@ export function useAvatarStorage() {
   const [savedAvatars, setSavedAvatars] = useState<Avatar[]>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+      if (!stored) return [];
+      
+      const avatars: Avatar[] = JSON.parse(stored);
+      
+      // Migrate legacy avatars on initial load
+      const migratedAvatars = avatars.map(avatar => ({
+        ...avatar,
+        appearance: {
+          ...avatar.appearance,
+          height: avatar.appearance.height ?? 1.0,
+          muscleDefinition: avatar.appearance.muscleDefinition ?? 0,
+          clothing: {
+            ...avatar.appearance.clothing,
+            style: avatar.appearance.clothing.style || 'casual'
+          }
+        }
+      }));
+      
+      return migratedAvatars;
     } catch (error) {
       console.error("Failed to load saved avatars:", error);
       return [];
@@ -35,7 +53,21 @@ export function useAvatarStorage() {
   const loadAvatar = useCallback((id: string): Avatar | null => {
     try {
       const avatar = savedAvatars.find(a => a.id === id);
-      return avatar || null;
+      if (!avatar) return null;
+      
+      // Migrate legacy avatars to include new fields
+      return {
+        ...avatar,
+        appearance: {
+          ...avatar.appearance,
+          height: avatar.appearance.height ?? 1.0,
+          muscleDefinition: avatar.appearance.muscleDefinition ?? 0,
+          clothing: {
+            ...avatar.appearance.clothing,
+            style: avatar.appearance.clothing.style || 'casual'
+          }
+        }
+      };
     } catch (error) {
       console.error("Failed to load avatar:", error);
       return null;
@@ -88,9 +120,22 @@ export function useAvatarStorage() {
           if (typeof result === 'string') {
             const importedAvatars: Avatar[] = JSON.parse(result);
             
-            // Validate structure
+            // Validate structure and migrate legacy avatars
             if (Array.isArray(importedAvatars)) {
-              const merged = [...savedAvatars, ...importedAvatars];
+              const migratedAvatars = importedAvatars.map(avatar => ({
+                ...avatar,
+                appearance: {
+                  ...avatar.appearance,
+                  height: avatar.appearance.height ?? 1.0,
+                  muscleDefinition: avatar.appearance.muscleDefinition ?? 0,
+                  clothing: {
+                    ...avatar.appearance.clothing,
+                    style: avatar.appearance.clothing.style || 'casual'
+                  }
+                }
+              }));
+              
+              const merged = [...savedAvatars, ...migratedAvatars];
               const unique = merged.filter((avatar, index, self) => 
                 self.findIndex(a => a.id === avatar.id) === index
               );

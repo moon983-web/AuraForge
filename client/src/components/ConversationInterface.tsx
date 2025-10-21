@@ -18,9 +18,10 @@ interface Message {
 
 interface ConversationInterfaceProps {
   avatar: Avatar;
+  onTalkingChange?: (isTalking: boolean) => void;
 }
 
-export default function ConversationInterface({ avatar }: ConversationInterfaceProps) {
+export default function ConversationInterface({ avatar, onTalkingChange }: ConversationInterfaceProps) {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
@@ -37,6 +38,13 @@ export default function ConversationInterface({ avatar }: ConversationInterfaceP
     isSupported,
     lastTranscript
   } = useSpeech(avatar.voice);
+
+  // Notify parent component when talking state changes
+  useEffect(() => {
+    if (onTalkingChange) {
+      onTalkingChange(isSpeaking);
+    }
+  }, [isSpeaking, onTalkingChange]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
